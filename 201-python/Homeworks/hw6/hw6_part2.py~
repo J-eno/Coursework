@@ -1,0 +1,21 @@
+# File: hw6_part1.py
+# Author: Joel Okpara
+# Date: 3/26/2016
+# Section: 04
+# E-mail: joelo1@umbc.edu
+# Description: Reads in numbers from the user and adds them to a list
+#              if not in list already
+
+def main():
+
+    prime = list(range(2,501))
+    others = list(range(2,26))
+    for o in others:
+        for n in prime:
+            if (n != o) and (n % o == 0):
+                prime.remove(n)
+    
+    for n in prime:
+        print(n, end = " ")
+
+main()

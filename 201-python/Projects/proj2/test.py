@@ -1,0 +1,11 @@
+
+
+def main():
+
+    stupid = open("p.txt")
+    aList = []
+    for l in stupid:
+        aList.append(l)
+
+    print(aList)
+main()

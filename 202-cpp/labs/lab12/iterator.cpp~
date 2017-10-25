@@ -1,0 +1,53 @@
+//comments
+#include <iostream>
+#include <vector>
+#include <iterator>
+
+using namespace std;
+
+int main()
+{
+vector<int> v;
+int input = 0;
+
+while(input != -1)
+  {
+    cout << "Enter an integer (-1 to exit): ";
+    cin >> input;
+    if(input != -1)
+      {
+	v.push_back(input);
+      }
+  }
+
+ vector<int> forward;
+ vector<int> back;
+/*for(vector<int>::iterator ittt = v.begin(); ittt != v.end(); ++ittt)
+   {
+     cout << *ittt << endl;
+   }
+*/
+ for(vector<int>::iterator it = v.begin(); it != v.end() - (v.size()/2); ++it)
+  {
+    forward.push_back(it);
+  }
+ for(vector<int>::reverse_iterator rit = v.rbegin(); rit != v.rend() - (v.size()/2); rit++)
+   {
+     back.push_back(rit);
+   }
+
+ for(unsigned int i = 0; i < forward.size(); i++)
+   {
+     cout << "front: " << forward[i]
+	  << " back: " << back[i];
+     if(forward[i] == back[i])
+       {
+	 cout << " are equal" << endl;
+       }
+     else
+       {
+	 cout << " are not equal" << endl;
+       }
+   }
+ return 0;
+}

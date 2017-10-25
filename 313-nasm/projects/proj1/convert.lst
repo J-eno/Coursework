@@ -1,0 +1,321 @@
+     1                                  	;;  Declare needed C  functions
+     2                                  	        extern  printf	; the C function, to be called
+     3                                  
+     4                                  
+     5                                  
+     6                                  		section .bss
+     7 00000000 <res 00000008>          dec_save:	resq	1
+     8 00000008 <res 00000008>          bin_save:	resq	1
+     9 00000010 <res 00000050>          abits:		resq	10
+    10 00000060 <res 00000070>          bbits:		resq	14
+    11                                  	
+    12                                  	        section .data	; Data section, initialized variables
+    13                                  
+    14                                  
+    15 00000000 256300                  fmt_char:	 db "%c",0	; no '\n' thus no 10
+    16 00000003 25316C6400              fmt_dig:	 db "%1ld",0	; print just one digit, e.g. 0 or 1
+    17 00000008 0A00                    fmt_end:	 db 10, 0	; just end line
+    18                                  
+    19 0000000A 3132362E3337352069-     fmt_dec		db "126.375 is: ",10,0
+    20 00000013 733A200A00         
+    21 00000018 31303130313130312E-     fmt_bin		db "10101101.10111 is: ",10,0
+    22 00000021 31303131312069733A-
+    23 0000002A 200A00             
+    24                                  	
+    25 0000002D 3132362E33373500        dec1:	  	db '1', '2', '6', '.','3','7','5',0
+    26 00000035 B715000000000000        bin1:	  	dq  1010110110111B 	; 10101101.10111 note where binary point should be
+    27                                  
+    28                                  
+    29 0000003D 50C3000000000000A8-     binaryPoints	dq	50000,25000,12500,6250,3125
+    30 00000046 61000000000000D430-
+    31 0000004F 0000000000006A1800-
+    32 00000058 0000000000350C0000-
+    33 00000061 00000000           
+    34 00000065 0000000000000000        result:		dq 	0	;holds results
+    35                                  
+    36                                  	
+    37                                  	        section .text	; Code section.
+    38                                  
+    39                                  	        global main	; the standard gcc entry point
+    40                                  main:				; the program label for the entry point
+    41                                  				;gets the first numbers before the decimal point
+    42 00000000 55                      	        push    rbp	; set up stack frame, must be aligned
+    43                                  
+    44 00000001 48BF-                   		mov	rdi,fmt_dec
+    45 00000003 [0A00000000000000] 
+    46 0000000B 48B800000000000000-     		mov	rax,0
+    47 00000014 00                 
+    48 00000015 E8(00000000)            		call	printf
+    49 0000001A 48B800000000000000-     	        mov     rax, 0	     ; be safe, zero all rax
+    50 00000023 00                 
+    51 00000024 8A0425[2D000000]        		mov	al, [dec1]; first byte into bottom of rax
+    52 0000002B 482D30000000            		sub	rax, 48   ; chang character to digit
+    53 00000031 4869C064000000          		imul 	rax,100
+    54 00000038 4889C6                  		mov	rsi, rax	     ; must go 64-bit to 64-bit
+    55 0000003B 48B800000000000000-     		mov	rax, 0		     ; no float
+    56 00000044 00                 
+    57                                  		
+    58                                  
+    59 00000045 48B800000000000000-     	        mov     rax, 0	; be safe, zero all rax
+    60 0000004E 00                 
+    61 0000004F 8A0425[2E000000]        		mov	al, [dec1+1]	; next byte into bottom of rax
+    62 00000056 482D30000000            		sub	rax, 48		; change character digit to number
+    63 0000005C 4869C00A000000          		imul	rax, 10
+    64 00000063 4801C6                  		add	rsi, rax	; must go 64-bit to 64-bit
+    65 00000066 48B800000000000000-     		mov	rax, 0		; no float
+    66 0000006F 00                 
+    67                                  
+    68 00000070 48B800000000000000-     		mov	rax,0
+    69 00000079 00                 
+    70 0000007A 8A0425[2F000000]        		mov	al,[dec1+2] ;next byte (4)
+    71 00000081 482D30000000            		sub	rax,48
+    72 00000087 4801C6                  		add	rsi, rax
+    73 0000008A 48893425[00000000]      		mov	[dec_save],rsi ;save the decimal number we have so far
+    74 00000092 48B800000000000000-     		mov 	rax, 0
+    75 0000009B 00                 
+    76                                  
+    77 0000009C 488B0425[00000000]      		mov 	rax, [dec_save]
+    78                                  
+    79                                  
+    80                                  
+    81                                  	
+    82 000000A4 48BB00000000000000-     		mov	rbx, 0
+    83 000000AD 00                 
+    84                                  DtoB:					;Decimal to Binary
+    85 000000AE 48BA00000000000000-     		mov	rdx, 0		;zero out rdx
+    86 000000B7 00                 
+    87 000000B8 48B902000000000000-     		mov	rcx, 2		;move 2 into rcx
+    88 000000C1 00                 
+    89 000000C2 48F7F1                  		div	rcx		;divide rax by rcx
+    90                                  					;remainder goes in rdx
+    91                                  
+    92 000000C5 488914DD[10000000]      		mov	[abits+rbx*8],rdx ;move the remainder into array abits
+    93 000000CD 488B34DD[10000000]      		mov 	rsi,[abits+rbx*8]
+    94                                  		
+    95 000000D5 48890425[65000000]      		mov	[result],rax ;move the result of the div into result
+    96 000000DD 48B800000000000000-     		mov 	rax, 0
+    97 000000E6 00                 
+    98                                  	
+    99 000000E7 488B0425[65000000]      	        mov	rax, [result]
+   100 000000EF 4881C308000000          		add	rbx, 1*8
+   101 000000F6 48813C25[65000000]-     		cmp 	qword [result], 0
+   102 000000FE 00000000           
+   103 00000102 7FAA                    		jg 	DtoB
+   104                                  	
+   105 00000104 48BB30000000000000-     		mov 	rbx, 6*8
+   106 0000010D 00                 
+   107                                  
+   108                                  printBeforeBP:			;print binary numbers before point
+   109 0000010E 48BF-                   		mov 	rdi,fmt_dig
+   110 00000110 [0300000000000000] 
+   111 00000118 488B04DD[10000000]      		mov	rax,[abits+rbx*8]
+   112 00000120 4889C6                  		mov	rsi,rax
+   113 00000123 48B800000000000000-     		mov	rax,0
+   114 0000012C 00                 
+   115 0000012D E8(00000000)            		call	printf
+   116 00000132 4881EB08000000          		sub 	rbx,8
+   117 00000139 4881FB00000000          		cmp	rbx,0
+   118 00000140 7DCC                    		jge	printBeforeBP
+   119                                  printBP:			;print point
+   120                                  	
+   121 00000142 48BF-                   		mov	rdi,fmt_char
+   122 00000144 [0000000000000000] 
+   123 0000014C 488B0425[30000000]      		mov	rax,[dec1+3]
+   124 00000154 4889C6                  		mov	rsi,rax
+   125 00000157 48B800000000000000-     		mov	rax,0
+   126 00000160 00                 
+   127 00000161 E8(00000000)            		call	printf
+   128                                  
+   129                                  
+   130                                  getAfterBP:			;get the rest of the decimal number
+   131 00000166 C60425[00000000]00      	        mov	byte [dec_save], 0
+   132 0000016E 8A0425[31000000]        	        mov     al, [dec1+4]	 ; first byte into bottom of rax
+   133 00000175 482D30000000            	        sub     rax, 48	   	; chang character to digit
+   134 0000017B 4869C064000000          	        imul    rax,100
+   135 00000182 4889C6                          	mov     rsi, rax ; must go 64-bit to 64-bit
+   136 00000185 48B800000000000000-     	        mov     rax, 0	 ; no float
+   137 0000018E 00                 
+   138                                  
+   139                                  		
+   140                                  	        
+   141 0000018F 8A0425[32000000]                        mov     al, [dec1+5] ; next byte into bottom of rax
+   142 00000196 482D30000000                    	sub     rax, 48	     ; change character digit to number
+   143 0000019C 4869C00A000000          	        imul    rax, 10
+   144 000001A3 4801C6                  	        add     rsi, rax ; must go 64-bit to 64-bit
+   145 000001A6 48B800000000000000-     	        mov     rax, 0	 ; no float
+   146 000001AF 00                 
+   147                                  
+   148                                  		
+   149                                  
+   150 000001B0 8A0425[33000000]        	        mov     al,[dec1+6] ;next byte (4)
+   151 000001B7 482D30000000            	        sub     rax,48
+   152 000001BD 4801C6                  	        add     rsi, rax
+   153 000001C0 48893425[00000000]      	        mov     [dec_save],rsi ;save the decimal number we have so far
+   154                                  
+   155                                  
+   156                                  
+   157 000001C8 488B0425[00000000]      		mov	rax, [dec_save]
+   158 000001D0 48C70425[65000000]-     		mov	qword [result],0
+   159 000001D8 00000000           
+   160 000001DC 48BB03000000000000-     		mov	rbx, 3
+   161 000001E5 00                 
+   162                                  	
+   163                                  DtoB2:
+   164                                  	;print first bit after point
+   165 000001E6 48BF-                   		mov     rdi,fmt_dig
+   166 000001E8 [0300000000000000] 
+   167 000001F0 48BA00000000000000-     		mov     rdx, 0		;zero our rdx
+   168 000001F9 00                 
+   169 000001FA 48B9F4010000000000-     		mov	rcx,500		;put 500 into rcx
+   170 00000203 00                 
+   171 00000204 48F7F9                  		idiv	rcx		;divide by the 500
+   172 00000207 48891425[65000000]      		mov     [result],rdx	;remainder of 375/500 is 375
+   173                                  	
+   174                                  	;; print stuff goes here
+   175 0000020F 4889C6                  		mov 	rsi,rax
+   176 00000212 48B800000000000000-     		mov	rax,0
+   177 0000021B 00                 
+   178 0000021C E8(00000000)            		call	printf
+   179                                  	
+   180 00000221 488B0425[65000000]      		mov	rax, [result]   ;move remainder into rax
+   181                                  
+   182 00000229 48BA00000000000000-     		mov	rdx,0
+   183 00000232 00                 
+   184 00000233 48B905000000000000-     		mov	rcx,5
+   185 0000023C 00                 
+   186 0000023D 48F7F9                  		idiv	rcx		;divide 375 by 5 to get 75
+   187                                  	
+   188                                  	;;print second bit after point - rax == 75
+   189                                  				
+   190 00000240 48BF-                   		mov	rdi,fmt_dig
+   191 00000242 [0300000000000000] 
+   192 0000024A 48BA00000000000000-     		mov	rdx,0
+   193 00000253 00                 
+   194 00000254 48B932000000000000-     		mov	rcx,50
+   195 0000025D 00                 
+   196 0000025E 48F7F9                  		idiv	rcx		;divide 75 by 50
+   197                                  					;gives us remainder of 25
+   198                                  					;we need 5
+   199 00000261 48891425[65000000]      		mov	[result],rdx
+   200                                  
+   201 00000269 4889C6                  		mov	rsi,rax
+   202 0000026C 48B800000000000000-     		mov	rax,0
+   203 00000275 00                 
+   204 00000276 E8(00000000)            		call	printf
+   205                                  
+   206                                  	
+   207 0000027B 488B0425[65000000]      		mov	rax,[result]
+   208 00000283 48BA00000000000000-     		mov	rdx,0
+   209 0000028C 00                 
+   210 0000028D 48B905000000000000-     		mov	rcx,5
+   211 00000296 00                 
+   212 00000297 48F7F9                  		idiv	rcx
+   213                                  		
+   214                                  	
+   215                                  	;; print 3rd bit after the point - rax == 5
+   216 0000029A 48BF-                   		mov	rdi,fmt_dig
+   217 0000029C [0300000000000000] 
+   218 000002A4 48BA00000000000000-     		mov	rdx,0
+   219 000002AD 00                 
+   220 000002AE 48B905000000000000-     		mov	rcx,5
+   221 000002B7 00                 
+   222 000002B8 48F7F9                  		idiv	rcx
+   223                                  
+   224 000002BB 4889C6                  		mov	rsi,rax
+   225 000002BE 48B800000000000000-     		mov	rax,0
+   226 000002C7 00                 
+   227 000002C8 E8(00000000)            		call	printf
+   228                                  
+   229 000002CD 48BF-                   		mov     rdi,fmt_end	; print end of line
+   230 000002CF [0800000000000000] 
+   231 000002D7 48B800000000000000-     		mov     rax, 0 		; no float
+   232 000002E0 00                 
+   233 000002E1 E8(00000000)            		call    printf
+   234                                  	
+   235                                  
+   236 000002E6 48BF-                   		mov     rdi,fmt_end		; print end of line
+   237 000002E8 [0800000000000000] 
+   238 000002F0 48B800000000000000-     		mov     rax, 0 ; no float
+   239 000002F9 00                 
+   240 000002FA E8(00000000)            		call    printf
+   241                                  
+   242 000002FF 48BF-                   		mov     rdi,fmt_bin ; print binary message
+   243 00000301 [1800000000000000] 
+   244 00000309 48B800000000000000-     		mov     rax, 0 ; no float
+   245 00000312 00                 
+   246 00000313 E8(00000000)            		call    printf
+   247                                  	
+   248                                  	
+   249                                  printBinaryWhole:	
+   250 00000318 48BF-                   		mov	rdi,fmt_dig
+   251 0000031A [0300000000000000] 
+   252 00000322 488B0425[35000000]      		mov	rax,[bin1]
+   253 0000032A 48C1E805                		shr	rax,5
+   254 0000032E 4889C6                  		mov	rsi,rax
+   255 00000331 48B800000000000000-     		mov	rax,0
+   256 0000033A 00                 
+   257 0000033B E8(00000000)            		call	printf
+   258                                  
+   259                                  		
+   260                                  fracToArray:
+   261 00000340 48C70425[60000000]-     		mov	qword[bbits],1
+   262 00000348 01000000           
+   263 0000034C 48C70425[68000000]-     		mov     qword[bbits+8],0
+   264 00000354 00000000           
+   265 00000358 48C70425[70000000]-     		mov     qword[bbits+16],1
+   266 00000360 01000000           
+   267 00000364 48C70425[78000000]-     		mov     qword[bbits+24],1
+   268 0000036C 01000000           
+   269 00000370 48C70425[80000000]-     		mov     qword[bbits+32],1
+   270 00000378 01000000           
+   271 0000037C 48BB00000000000000-     		mov	rbx,0
+   272 00000385 00                 
+   273 00000386 48C70425[65000000]-     		mov	qword[result],0
+   274 0000038E 00000000           
+   275                                  
+   276                                  
+   277                                  
+   278                                  printBP2:			;print point
+   279                                  
+   280 00000392 48BF-                   	                mov     rdi,fmt_char
+   281 00000394 [0000000000000000] 
+   282 0000039C 488B0425[30000000]      	                mov     rax,[dec1+3]
+   283 000003A4 4889C6                  	                mov     rsi,rax
+   284 000003A7 48B800000000000000-     	                mov     rax,0
+   285 000003B0 00                 
+   286 000003B1 E8(00000000)            	                call    printf
+   287                                  	
+   288                                  
+   289                                  binToDec:
+   290 000003B6 48BF-                   		mov	rdi,fmt_dig
+   291 000003B8 [0300000000000000] 
+   292 000003C0 488B83[60000000]        		mov	rax,[bbits +rbx]
+   293 000003C7 480FAF83[3D000000]      		imul	rax,[binaryPoints +rbx]
+   294 000003CF 48010425[65000000]      		add	[result],rax
+   295 000003D7 4881C308000000          		add	rbx,8
+   296 000003DE 4881FB28000000          		cmp	rbx,5*8
+   297 000003E5 7ECF                    		jle	binToDec
+   298                                  
+   299 000003E7 488B3425[65000000]      		mov	rsi,[result]
+   300 000003EF 48B800000000000000-     		mov	rax,0
+   301 000003F8 00                 
+   302 000003F9 E8(00000000)            		call	printf
+   303                                  		
+   304                                  
+   305                                  
+   306                                  
+   307                                  
+   308                                  
+   309 000003FE 48BF-                   		mov     rdi,fmt_end     	; print end of line
+   310 00000400 [0800000000000000] 
+   311 00000408 48B800000000000000-     		mov     rax, 0 ; no float
+   312 00000411 00                 
+   313 00000412 E8(00000000)            		call    printf
+   314                                  	
+   315 00000417 5D                      	        pop     rbp	; restore stack
+   316                                  
+   317 00000418 48B800000000000000-     	        mov     rax,0	; normal, no error, return value
+   318 00000421 00                 
+   319 00000422 C3                      	        ret		; return
+   320                                  
+   321                                  	

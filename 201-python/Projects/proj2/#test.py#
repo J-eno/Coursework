@@ -1,0 +1,12 @@
+listee = []
+currentWord = "COMPUTER"
+filething = open("p.txt")
+filething2 = open("w.txt")
+
+for l in filething:
+   # print (l.strip())
+    #listee.append(l.strip())
+    if currentWord[0] in ll:
+
+print(listee)
+

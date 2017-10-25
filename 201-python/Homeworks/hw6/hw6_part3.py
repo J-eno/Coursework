@@ -1,0 +1,48 @@
+# File: hw6_part3.py
+# Author: Joel Okpara
+# Date: 3/26/2016
+# Section: 04
+# E-mail: joelo1@umbc.edu
+# Description: Makes shapes based on user input
+#
+
+
+def drawTri(num):
+    for n in range(num):
+        print("*"*(n+1))
+
+def drawSq(num):
+    for n in range(num):
+        print("*"*(num))
+
+def drawPllm(num):
+    for n in range(num):
+        print(" "*n+"*"*num)
+
+
+
+def main():
+
+    dimensions = int(input("Please enter a positive integer: "))
+    shape = input("Please choose a shape: square, parallelogram, triangle, or all: ")
+    while dimensions <= 0:
+        dimensions = int(input("Only enter a positive integer greater than 0: "))
+
+    while shape != "square" and shape != "parallelogram" and shape != "triangle" and shape != "all":
+        shape = input("Only choose: square, parallelogram, triangle, or all: ")
+   
+    if shape == "square":
+        drawSq(dimensions)
+    elif shape == "parallelogram":
+        drawPllm(dimensions)
+    elif shape == "triangle":
+        drawTri(dimensions)
+    elif shape == "all":
+        drawSq(dimensions)
+        print()
+        drawTri(dimensions)
+        print()
+        drawPllm(dimensions)
+    
+
+main()

@@ -1,0 +1,35 @@
+# File: lab10.py
+# Author: Joel Okpara
+# Date: 4/18/16
+# Section: 04
+# E-mail: joelo1@umbc.edu
+# Description: YOUR DESCRIPTION GOES HERE AND HERE
+# YOUR DESCRIPTION CONTINUED SOME MORE
+
+def convertToDict(fileContents):
+    stateDict = {}
+    for line in fileContents:
+        stateKey,stateValue =line.strip().split(",")
+        stateDict[stateKey] = stateValue
+    
+    return stateDict
+def main():
+
+    states = open("states.txt")
+    abbrev = convertToDict(states)
+    #print(abbrev)
+    userInput = ""
+    while userInput != "list" and userInput != "exit":
+        userInput = input("Choose a State to Abbreviate(list to get list and exit to exit): ")
+        while userInput not in abbrev and userInput != "list" and userInput != "exit":
+            userInput = input("Sorry. That is not a state, pick again:")
+        while userInput in abbrev and userInput != "list" and userInput != "exit":
+        print( "The abbreviation of the state:",userInput,"is",abbrev[userInput])
+
+        if userInput.lower() == "list":
+            print(abbrev.keys())
+        if userInput.lower() == "exit":
+            print("Thanks for using the state abbreviator!")
+            
+
+main()

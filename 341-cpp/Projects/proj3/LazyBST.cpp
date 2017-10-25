@@ -1,0 +1,349 @@
+// File: LazyBST.cpp
+//
+// CMSC 341 Spring 2017 Project 3
+//
+// Class implementations for Lazy Binary Search Tree
+//
+
+#include "LazyBST.h"
+#include <iostream>
+#include <stdlib.h>
+using namespace std;
+
+//Constructor
+LazyBST::LazyBST()
+{
+  root = NULL;
+}
+
+//copy constructor
+LazyBST::LazyBST(const LazyBST &other)
+{
+  root = NULL;
+  //uses overloaded assignment operator
+  *this = other;
+}
+
+//destructor
+LazyBST::~LazyBST()
+{
+  destroy(root);
+}
+
+//destroys trees
+void LazyBST::destroy(Node *leaf)
+{
+  if(leaf != NULL)
+    {
+		//destroy left tree recursively
+      destroy(leaf->m_left);
+	  //destroy right tree recursively
+      destroy(leaf->m_right);
+
+      delete leaf;
+      leaf = NULL;
+    }
+}
+
+// Copies trees
+void LazyBST::copyTree(Node *& lhsRoot, Node *rhsRoot)
+{
+	//if root of tree we want to copy is null
+	if (rhsRoot == NULL)
+	{
+		lhsRoot = NULL;
+	}
+	else
+	{
+		lhsRoot = new Node();
+		lhsRoot->m_data = rhsRoot->m_data;
+		copyTree(lhsRoot->m_left, rhsRoot->m_left);
+		copyTree(lhsRoot->m_right, rhsRoot->m_right);
+	}
+}
+
+//Overloaded assignment operator
+const LazyBST& LazyBST::operator= (const LazyBST &rhs)
+{
+	//self assignment check
+  if(&rhs == this) return *this;
+  
+  //if there is an existing tree clear it
+  if (root != NULL)
+	  destroy(root);
+  if (rhs.root == NULL)
+	  root = NULL;
+  else
+  {
+	//call copyTree function
+	  copyTree(root, rhs.root);
+  }
+  
+}
+
+//Public Insert function
+void LazyBST::insert(int key)
+{
+
+  insert(key, root);
+  //rebalance after inserting
+  rebalance(root);
+}
+
+void LazyBST::insert(int key, Node *&leaf)
+{
+  if(leaf == NULL)// no node
+    {
+      //create node
+      leaf = new Node(key);
+    }
+  //Value at current leaf is greater than the key
+  else if(key < leaf->m_data)
+    {insert(key, leaf->m_left);}
+  //Value at current leaf is less than the key
+  else if(key > leaf->m_data)
+    {insert(key, leaf->m_right);}
+  else;
+
+}
+
+//Public Remove
+bool LazyBST::remove(int key)
+{
+  return remove(key, root);
+}
+
+//Remove Function
+bool LazyBST::remove(int key, Node *&leaf)
+{
+  if(leaf == NULL)
+    {
+		rebalance(leaf);
+		return false;
+	}
+  //search for the key
+  if(key < leaf->m_data)
+    {remove(key, leaf->m_left);}
+  else if(key > leaf->m_data)
+    {remove(key, leaf->m_right);}
+  //If key has two children
+  else if(leaf->m_left != NULL && leaf->m_right != NULL)
+    {
+		//find smallest value in the right tree
+      leaf->m_data = findMin(leaf->m_right);
+      remove(leaf->m_data, leaf->m_right);
+    }
+  else
+    {
+      Node *oldNode = leaf;
+	  //if there is a left leaf, set the node to that else set the leaf to the righ leaf
+      leaf = (leaf->m_left != NULL) ? leaf->m_left : leaf->m_right;
+      delete oldNode;
+    }
+  rebalance(leaf);
+  return true;
+}
+
+
+bool LazyBST::find(int key)
+{
+  return find(key, root);
+}
+
+bool LazyBST::find(int key, Node *leaf)
+{
+  if(leaf == NULL) 
+    {return false;}
+  //the value is less than the current node's value
+  else if( key < leaf->m_data) 
+    {return find(key, leaf->m_left);}
+  //the value is greater than the current node's value
+  else if(key > leaf->m_data)
+    {return find(key, leaf->m_right);}
+  else 
+    {return true;}
+}
+
+int LazyBST::findMin(Node *leaf)
+{
+  if(leaf == NULL)
+    {
+      return NULL;
+    }
+  //If there is no child smaller, return this node
+  if(leaf->m_left == NULL)
+    {return leaf->m_data;}
+  else
+    {return findMin(leaf->m_left);}
+}
+
+int LazyBST::Node::size()
+  {
+    if(m_left == NULL && m_right == NULL)
+      return 1;
+    //size of left child if there is one
+    int l = m_left ? m_left->size() : 0;
+    //size of right child if there is one
+    int r = m_right ? m_right->size() : 0;
+    
+    return 1 + (l + r);
+  }
+
+int LazyBST::Node::height()
+{
+ 
+  if(m_left == NULL && m_right == NULL)
+    return 0;
+  //height of left child if there is one
+  int l = m_left  ? m_left->height() : 0;
+  //height of right child if there is one
+  int r = m_right ? m_right->height() : 0;
+
+  
+  return 1 + max(l,r);
+}
+
+ void LazyBST::inorder()
+ {
+   inorder(root);
+ }
+
+ void LazyBST::inorder(Node *leaf)
+ {
+   if(leaf != NULL)
+     {
+       cout << "(";
+       if(leaf->m_left)
+	 {
+	     inorder(leaf->m_left);
+	 }
+
+       cout << leaf->m_data << ":" << leaf->height() << ":" << leaf->size();
+
+       if(leaf->m_right)
+	 {
+	   inorder(leaf->m_right);
+	 }
+       cout << ")";
+     }
+   else return;
+ }
+
+void LazyBST::rebalance(Node *leaf)
+{
+
+	//if the node and it's children exist
+  if (leaf != NULL && leaf->m_left != NULL && leaf->m_right != NULL)
+	{
+		//check if the left subtree is double or more of the right subtree and vice versa
+		if (((leaf->m_left->size() >= (leaf->m_right->size() * 2))
+			&& (leaf->m_left->height() >= 4))
+			||
+			(leaf->m_right->size() >= (leaf->m_left->size() * 2)
+			&& leaf->m_right->height() >= 4))
+		{
+			
+			//create array of the size of our node that needs rebalancing
+			int *arr = (int*)calloc(leaf->size(), sizeof(int));
+			int arrayEnd = leaf->size()-1;
+			//store Tree's values in array
+			toArray(leaf, arr);
+			//clear what we have now
+			delete leaf;
+			leaf = NULL;
+			//set the leaf equal to our new BST
+			leaf = toBST(arr, 0, arrayEnd);
+		}
+      else
+	{
+	  rebalance(leaf->m_left);
+	  rebalance(leaf->m_right);
+	}
+	}
+
+}
+
+//ToArray function
+void LazyBST::toArray(Node *leaf, int arr[])
+{
+	fillArray(leaf, arr, 0);
+}
+
+//fillArray function
+int LazyBST::fillArray(Node* leaf, int arr[], int i)
+{
+	if (leaf == NULL)
+		return i;
+
+	//inorder walk except inserting values into array
+	if (leaf->m_left)
+	{
+		i = fillArray(leaf->m_left, arr, i);
+	}
+	arr[i] = leaf->m_data;
+	i++;
+
+	if (leaf->m_right)
+	{
+		i = fillArray(leaf->m_right, arr, i);
+	}
+	return i;
+}
+
+LazyBST::Node* LazyBST::toBST(int arr[], int start, int end)
+{
+	if (start > end)
+	{
+		return NULL;
+	}
+	//Get middle element and make it the new root
+	int middle = (start + end) / 2;
+	Node *newRoot = new Node(arr[middle]);
+	//recreate left subtree
+	newRoot->m_left = toBST(arr, start, middle - 1);
+	//recreate right subtree
+	newRoot->m_right = toBST(arr, middle + 1, end);
+	return newRoot;
+
+}
+
+bool LazyBST::locate(const char *position, int &key)
+{
+	Node *curr = root;
+	//for each character in our string
+	for (int i = 0; position[i] != '\0'; i++)
+	{
+		if (position[i] == 'R')
+		{
+			//if there is no right node
+			if (curr->m_right == NULL)
+				return false;
+			//else set curr = right node
+			curr = curr->m_right;
+		}
+		else if (position[i] == 'L')
+		{
+			//if there is no left node
+			if (curr->m_left == NULL)
+				return false;
+			//else set curr = left node
+			curr = curr->m_left;
+		}
+		else
+		{
+			//if we haven't read in an 'L' or 'R' that means we want the root's value
+			if (root == NULL)
+				return false;
+			curr = root;
+		}
+	}
+	if (curr)
+	{
+		key = curr->m_data;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}

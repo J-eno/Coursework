@@ -1,0 +1,47 @@
+Joel Okpara
+2/7/2016
+Section 4
+
+Question 1: Determine whether a number is a prime
+
+1.Recieve positive number from user
+2.Initialize variables called answer2, answer3, and answer5
+3.Save number in variable  userNum
+4.Divide userNum by 2
+5.Store in answer2
+6.Divide userNum by 3
+7.Store in answer3
+8.Divide by 5
+9.Store in answer5
+10.If answer2,answer3, OR answer5 =a whole number display "Not Prime"
+11 Else display Prime
+
+
+
+Question 2: Determine whether a word is a palindrome
+
+1.Recieve word from user
+2.Store word in string called userWord
+3.
+
+Question 3: Find the card with the lowest number
+
+1.Pick a card
+2.Save number in card1
+3.Pick another card
+4.Save in card2
+5.If card1<card2 delete card2
+6.else delete card1
+7.If card1 holds a number, display (card1 "Is the lowest number")
+8.else display (card2 "Is the lowest number")
+
+
+Question 4: Compute the factorial
+
+1.Receive positive number from user
+2.Save in baseNum
+3.Initialize int called fNum and set it to 1
+4.Multiply baseNum*fNum
+5.baseNum - 1
+6.if baseNum = 0 display fNum
+7.else repeat steps 4 through 6

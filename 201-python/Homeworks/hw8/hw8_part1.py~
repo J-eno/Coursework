@@ -1,0 +1,33 @@
+# File: hw8_part1.py 
+# Author: Joel Okpara
+# Date:
+# Section: 04
+# E-mail: joelo1@umbc.edu
+# Description:
+STOP = -1
+
+def maxInt(numList):
+    if len(numList) == 1:
+        return numList[0]
+    else:
+        largest = maxInt(numList[1:])
+        if largest > numList[0]:
+            return largest
+        else:
+            return numList[0]
+    
+def main():
+    
+    myList = []
+    userNum = 0
+    while userNum != STOP:
+        userNum = int(input("Enter a number to add to the list, or '-1' to stop: "))
+        myList.append(userNum)
+    if userNum == STOP:
+        myList.remove(STOP)
+        print()
+
+    maxNum = maxInt(myList)
+    print("The list you gave us is:",myList)
+    print("The maximum value in this list is:",maxNum)
+main()

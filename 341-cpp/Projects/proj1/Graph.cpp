@@ -1,0 +1,310 @@
+//File: Graph.cpp
+//
+// CMSC 341 Spring 2017
+//
+// Implementation file for Graph
+//
+
+#include "Graph.h"
+#include <iostream>
+
+using namespace std;
+
+//Graph constructor
+Graph::Graph(int n)
+{
+  if(n <= 0)
+    {
+      throw out_of_range("Not enough Vectors");
+    }
+  else
+    {
+      m_size = n;
+      //initialize adjLists array as an array of size m_size
+      m_adjLists = new AdjListNode*[m_size]();
+    }
+}
+
+//Graph Copy Constructor
+Graph::Graph(const Graph &G)
+{
+  m_size = G.m_size; // set m_size to the size of Graph you want to copy
+  m_adjLists = new AdjListNode*[m_size]; // initialize array to this size
+  AdjListNode *ptr, *curr;
+  //for each linked list
+  for(int i = 0; i < m_size; i++)
+    {
+      //look at node in Graph you want to copy
+      curr = G.m_adjLists[i];
+      //if node in other Graph is NULL
+      if(curr == NULL)
+	{
+	  //set same node in this Graph to NULL
+	  m_adjLists[i] = NULL;
+	}
+      else
+	{
+	  //create Node for neighbor of current node
+	  ptr = new AdjListNode(curr->m_vertex);
+	  m_adjLists[i] = ptr;
+	  curr = curr->next;
+	  while(curr != NULL)
+	    {
+	      ptr->next = new AdjListNode(curr->m_vertex);
+	      curr = curr->next;
+	      ptr = ptr->next;
+	    }
+	}
+    }
+}
+
+//Graph Destructor
+Graph::~Graph()
+{
+  AdjListNode *prev, *curr;
+  //for each list in array
+  for(int i = 0; i < m_size; i++)
+    {
+      //set curr to first node in list
+      curr = m_adjLists[i];
+      //for everycnode
+      while(curr != NULL)
+	{
+	  prev = curr;
+	  curr = curr->next;
+	  prev->next = NULL;
+	  delete prev;
+	}
+    }
+  delete [] m_adjLists;
+}
+
+const Graph &Graph::operator= (const Graph &rhs)
+{
+  //protect against self assignment
+  if(&rhs == this) return *this;
+  //clear graph
+  this->~Graph();
+  m_size = rhs.m_size;
+  m_adjLists = new AdjListNode*[m_size];
+  AdjListNode *ptr, *curr;
+  //copy rhs Graph
+  for(int i = 0; i < m_size; i++)
+    {
+      curr = rhs.m_adjLists[i];
+      if(curr == NULL)
+        {
+          m_adjLists[i] = NULL;
+        }
+      else
+        {
+	  ptr = new AdjListNode(curr->m_vertex);
+          m_adjLists[i] = ptr;
+          curr = curr->next;
+	  while(curr != NULL)
+	    {
+	      ptr->next = new AdjListNode(curr->m_vertex);
+	      curr = curr->next;
+	      ptr = ptr->next;
+	    }
+        }
+    }
+   return *this;
+}
+
+//Return size of the graph
+int Graph::size()
+{
+  return m_size;
+}
+
+
+ void Graph::addEdge(int u, int v)
+ {
+   //if the vectors are within the size of the graph
+   if( u < m_size && v < m_size)
+     {
+   //adds v as neighbor of u
+   AdjListNode *newNode = new AdjListNode(v);
+   newNode->next = m_adjLists[u];
+   m_adjLists[u] = newNode;
+   //adds u as neighbor of v
+   newNode = new AdjListNode(u);
+   newNode->next = m_adjLists[v];
+   m_adjLists[v] = newNode;
+     }
+   else
+     {
+       throw out_of_range("The vertex does not exist");
+     }
+ }
+
+//AdjListNode Constructor
+Graph::AdjListNode::AdjListNode(int v, AdjListNode *ptr)
+{
+  m_vertex = v;
+  next = ptr;
+}
+
+//Prints Adjacency List
+void Graph::dump()
+{
+  AdjListNode *curr;
+  cout << "Dump out graph ( size = " << m_size << " ):" << endl;
+  for(int i = 0; i < m_size; ++i)
+    {
+      cout << "[ " << i << "]: ";
+      curr = m_adjLists[i];
+      while( curr != NULL)
+	{
+	  cout << curr->m_vertex << " ";
+	  curr = curr->next;
+	}
+      cout << endl;
+    }
+}
+
+//Neighbor Iterator Implementation
+
+Graph::NbIterator::NbIterator(Graph *Gptr, int v, bool isEnd)
+{
+  m_Gptr = Gptr;
+  m_source = v;
+
+  if(m_Gptr == NULL)
+    {
+      return;
+    }
+
+  if(isEnd)
+    {
+      m_where =  NULL;
+      return;
+    }
+  
+  m_where = m_Gptr->m_adjLists[m_source];
+}
+
+// Neighbor Iterator Begin
+Graph::NbIterator Graph::nbBegin(int v)
+{
+  return NbIterator(this, v);
+}
+
+//Neighbor Iterator End
+Graph::NbIterator Graph::nbEnd(int v)
+{
+  return NbIterator(this, v, true);
+}
+
+// Overlaoded != operator
+bool Graph::NbIterator::operator!=(const NbIterator& rhs)
+{
+  return(m_Gptr != rhs.m_Gptr 
+	 || m_where != rhs.m_where);
+}
+
+//Overloaded ++ operator
+void Graph::NbIterator::operator++(int dummy)
+{
+  if( m_Gptr == NULL || m_where == NULL)
+    {
+      return;
+    }
+
+  m_where = m_where->next;
+}
+
+//overloaded * operator
+int Graph::NbIterator::operator*()
+{
+  if(m_where == NULL)
+    {
+      throw out_of_range("NbIterator dereference error.");
+    }
+  return m_where->m_vertex;
+}
+
+// Edge Iterator Implementation
+
+Graph::EgIterator::EgIterator(Graph *Gptr, bool isEnd)
+{
+  m_Gptr = Gptr;
+  if(m_Gptr == NULL)
+  {
+    return;
+  }
+  
+  if(isEnd)
+    {
+      m_source = m_Gptr->m_size;
+      m_where = NULL;
+      return;
+    }
+
+  m_source = 0;
+  m_where = m_Gptr->m_adjLists[0];
+
+  while(m_where == NULL)
+    {
+      m_source++;
+      if(m_source == m_Gptr->m_size)
+	{
+	  break;
+	}
+      m_where = m_Gptr->m_adjLists[m_source];
+    }
+}
+
+Graph::EgIterator Graph::egBegin()
+{
+  return EgIterator(this, false);
+}
+
+Graph::EgIterator Graph::egEnd()
+{
+  return EgIterator(this, true);
+}
+
+bool Graph::EgIterator::operator!= (const EgIterator& rhs)
+{
+  return(m_Gptr != rhs.m_Gptr
+	 || m_source != rhs.m_source
+	 || m_where != rhs.m_where);
+}
+
+void Graph::EgIterator::operator++(int dummy)
+{
+  if(m_Gptr == NULL || m_where == NULL)
+    {
+      return;
+    }
+
+  do
+    {
+      m_where = m_where->next;
+      while( m_where == NULL)
+	{
+	  m_source++;
+	  if( m_source == m_Gptr->m_size)
+	    {
+	      break;
+	    }
+	  m_where = m_Gptr->m_adjLists[m_source];
+	}
+      if(m_where == NULL)
+	{
+	  break;
+	}
+    }
+  while( m_source > m_where->m_vertex);
+}
+
+pair<int,int> Graph::EgIterator::operator*()
+{
+  if (m_where == NULL)
+    {
+      throw out_of_range("EgIterator dereference error");
+    }
+  return pair<int,int>(m_source, m_where->m_vertex);
+}

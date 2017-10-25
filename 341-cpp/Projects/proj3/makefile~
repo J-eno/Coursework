@@ -1,0 +1,14 @@
+CXX = g++
+CXXFLAGS = -Wall
+
+driver: LazyBST.o
+	$(CXX) $(CXXFLAGS) LazyBST.o driver.cpp -o driver
+
+Graph.o: LazyBST.cpp LazyBST.h
+	$(CXX) $(CXXFLAGS) -c LazyBST.cpp
+
+clean:
+	rm *.o
+	rm *~
+run:
+	./driver

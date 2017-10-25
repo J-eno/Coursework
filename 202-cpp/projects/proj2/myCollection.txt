@@ -1,0 +1,7 @@
+90 Shellder 161 16 1
+37 Vulpix 175 17 1
+50 Diglett 276 27 1
+37 Vulpix 92 9 1
+23 Ekans 24 2 1
+52 Meowth 44 4 1
+10 Caterpie 386 38 1

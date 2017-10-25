@@ -1,0 +1,75 @@
+#include <iostream>
+using namespace std;
+
+int main(){
+
+const int NUM_STUDENTS = 100;
+int scores[NUM_STUDENTS] = {0};
+int numScores = 0;
+
+int userInput;
+
+ cout << "Enter a score (-1 when done): ";
+ cin >> userInput;
+
+ while(userInput >= 0 && numScores < NUM_STUDENTS)
+   {
+     scores[numScores] = userInput;
+     numScores++;
+     
+     cout << "Enter a score (-1 when done): ";
+     cin >> userInput;
+
+   }
+ int max(int data[], int dataLen)
+ {
+   int currentMax = data[0];
+   for(int i = 1; i< dataLen; i++)
+     {
+       if (data[i] > currentMax)
+	 {
+	   currentMax = data[i];
+	 }
+     }
+   return currentMax;
+ }
+
+ int min(int data[], int dataLen)
+ {
+   int currentMin = data[0];
+   for(int i = 1; i < dataLen; i++)
+     {
+       if(data[i] < currentMin)
+	 {
+	   currentMin = data[i];
+	 }
+     }
+   return currentMin;
+ }
+
+ int avg(int data[], int dataLen)
+ {
+   int currentVal = data[0];
+   for(int i = 1; i < dataLen; i++)
+     {
+       currentVal = currentVal + data[i];
+     }
+   int average = currentVal / dataLen;
+   return average;
+ }
+
+ int maxVal = max(scores, numScores);
+ int minVal = min(scores, numScores);
+ int avgVal = avg(scores, numScores);
+
+
+ if (userInput == -1)
+   {
+     cout << "Max Score is " << maxVal << endl
+	  << "Min Score is " << minVal << endl
+	  << "Average Score is " << avgVal << endl;
+   }
+
+  return 0;
+}
+

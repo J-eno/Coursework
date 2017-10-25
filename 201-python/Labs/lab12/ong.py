@@ -1,0 +1,31 @@
+# Joel Okpara
+# 5/2/2016
+
+class Ong:
+    def __init__(self, word):
+        self.word = word
+    
+    def isVowel(self,letter):
+        if letter == "a" or letter == "e" or letter == "i" or letter == "o" or letter == "u":
+            return True
+        else:
+            return False
+
+    def translateOng(self):
+        ongString = ""
+        for c in self.word:
+            if self.isVowel(c) == True:
+                ongString += c
+            else:
+                ongString += c + "ong"
+        print(ongString)
+
+def main():
+    print("Welcome to Ong speak translator")
+    ourWord = input("Enter a word to translate: ")
+    ourWord = Ong(ourWord)
+    ourWord.translateOng()
+
+
+
+main()

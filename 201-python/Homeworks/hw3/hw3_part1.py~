@@ -1,0 +1,118 @@
+on 8-606 and 7-302 of the Annotated Code of MD.
+
+NOTICE:  This system is for the use of authorized users only.
+         Individuals using this computer system without authority, or in
+         excess of their authority, are subject to having all of their
+         activities on this system monitored and recorded by system
+         personnel.
+
+joelo1@gl.umbc.edu's password:
+Last login: Sun Feb 14 10:19:14 2016 from wireless-220-46.wireless.umbc.edu
+
+  UMBC Division of Information Technology            http://www.umbc.edu/oit
+  --------------------------------------------------------------------------
+  If you have any questions or problems regarding these systems, please call
+  the DoIT Helpdesk at 410-455-3838, or submit your request on the web by
+  visiting http://my.umbc.edu/help/request
+
+  Remember that the Division of Information Technology will never ask for
+  your password. Do NOT give out this information under any circumstances.
+  --------------------------------------------------------------------------
+  ATTENTION!! These servers are a shared resource and should not be used
+  for the following:
+
+  - TESTING OR DEVELOPMENT of your applications which utilize the
+    fork() system call. Limit this work to lab workstations or your
+    personal systems.
+
+  - TESTING OR DEVELOPMENT of your broadcast or multicast-based
+    applications. These should be developed in an isolated environment.
+
+  As of April 1, 2010, email is no longer allowed to be sent from this
+  system. For more information see our Release Notes:
+
+  http://wiki.umbc.edu/display/CIG/OIT+Linux+Environment+Release+Notes
+
+[joelo1@linux3 ~]ls
+201  bin  www
+[joelo1@linux3 ~]cd 201
+[joelo1@linux3 ~/201]ls
+Homeworks  Labs
+[joelo1@linux3 ~/201]cd Homeworks
+[joelo1@linux3 Homeworks]ls
+hw1  hw2
+[joelo1@linux3 Homeworks]mkdir hw3
+[joelo1@linux3 Homeworks]ls
+hw1  hw2  hw3
+[joelo1@linux3 Homeworks]/usr/bin/scl enable python33 bash
+bash-4.1$ cd hw3
+bash-4.1$ emacs hw3_part1.py
+File Edit Optionon 8-606 and 7-302 of the Annotated Code of MD.
+
+NOTICE:  This system is for the use of authorized users only.
+         Individuals using this computer system without authority, or in
+         excess of their authority, are subject to having all of their
+         activities on this system monitored and recorded by system
+         personnel.
+
+joelo1@gl.umbc.edu's password:
+Last login: Sun Feb 14 10:19:14 2016 from wireless-220-46.wireless.umbc.edu
+
+  UMBC Division of Information Technology            http://www.umbc.edu/oit
+  --------------------------------------------------------------------------
+  If you have any questions or problems regarding these systems, please call
+  the DoIT Helpdesk at 410-455-3838, or submit your request on the web by
+  visiting http://my.umbc.edu/help/request
+
+  Remember that the Division of Information Technology will never ask for
+  your password. Do NOT give out this information under any circumstances.
+  --------------------------------------------------------------------------
+  ATTENTION!! These servers are a shared resource and should not be used
+  for the following:
+
+  - TESTING OR DEVELOPMENT of your applications which utilize the
+    fork() system call. Limit this work to lab workstations or your
+    personal systems.
+
+  - TESTING OR DEVELOPMENT of your broadcast or multicast-based
+    applications. These should be developed in an isolated environment.
+
+  As of April 1, 2010, email is no longer allowed to be sent from this
+  system. For more information see our Release Notes:
+
+  http://wiki.umbc.edu/display/CIG/OIT+Linux+Environment+Release+Notes
+
+[joelo1@linux3 ~]ls
+201  bin  www
+[joelo1@linux3 ~]cd 201
+[joelo1@linux3 ~/201]ls
+Homeworks  Labs
+[joelo1@linux3 ~/201]cd Homeworks
+[joelo1@linux3 Homeworks]ls
+hw1  hw2
+[joelo1@linux3 Homeworks]mkdir hw3
+[joelo1@linux3 Homeworks]ls
+hw1  hw2  hw3
+[joelo1@linux3 Homeworks]/usr/bin/scl enable python33 bash
+bash-4.1$ cd hw3
+bash-4.1$ emacs hw3_part1.py
+File Edit Option
+# File: hw3_part1.py
+# Author: Joel Okpara
+# Date: 2/21/2016
+# Section: 04
+# E-mail: joelo1@umbc.edu
+# Description:
+# This program recieves a float from the user and prints out whether
+# it is positive, negative, or equal to zero
+# 
+def main():
+    userFloat = float(input("Enter a number!"))
+    if userFloat > 0:
+        print ("Your number is positive!")
+    if userFloat < 0:
+        print ("Your number is negative!")
+    if userFloat == 0:
+        print ("Your number is zero!")
+    
+main()

@@ -1,0 +1,29 @@
+# File: hw3_part3.py
+# Author: Joel Okpara
+# Date: 2/21/2016
+# Section: 04
+# E-mail: joelo1@umbc.edu
+# Description: This program guesses
+
+def main():
+#This segment asks user for information
+    woman = input("Is your character a woman?(y/n)")
+    if woman == "y":
+        blueEyes = input("Does your character have blue eyes?(y/n)")
+        if blueEyes == "y":
+            print("Your character is Jane!")
+        else:
+            print("Your character is Marni!")
+    elif woman == "n":
+        glasses = input("Does your character wear glasses?(y/n)")
+        if glasses == "y":
+            print("Your character is Adrian!")
+        elif glasses == "n":
+            beard = input("Does your character have a beard?(y/n)")
+            if beard == "n":
+                print("Your character is Zhang!")
+            else:
+                print ("Your character is Peder!")
+
+main()
+

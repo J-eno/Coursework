@@ -1,0 +1,32 @@
+# File: hw7_part3
+# Author: Joel Okpara
+# Date: 4/2/2016
+# Section: 04
+# E-mail: joelo1@umbc.edu
+# Description: blah blahs the blah blah
+
+def main():
+
+    theFile = input("Please enter the name of the file to open: ")
+    while theFile[-3:] != "txt" and theFile[-3:] != "dat":
+        print("The file must end in .txt or .dat to be valid")
+        theFile = input("Please enter the name of the file to open: ")
+    ourFile = open(theFile)
+    wholeThing = ourFile.read()
+
+    words = wholeThing.split()
+    numOfWords = len(words)
+    print("\tThe file", theFile, "has", numOfWords, "words in it")
+
+    totalChars = 0
+    for w in words:
+        totalChars = totalChars + len(w)
+
+    avgLength = totalChars / numOfWords
+    avgLength = format(avgLength, ".1f")
+    print("\tThe average length of each word is", avgLength, "letters long")
+
+    sentence = wholeThing.split(".")
+    numOfSent = len(sentence)
+    print("\tThere are", numOfSent, "sentences in this file")
+main()

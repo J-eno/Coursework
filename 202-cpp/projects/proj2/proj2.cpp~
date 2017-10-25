@@ -1,0 +1,321 @@
+// File: proj2.cpp
+// Project: CMSC 202 Project 2, Fall 2016
+// Author: Joel Okpara
+// Date: 10/16/2016
+// Section 1
+// Email: joelo1@umbc.edu
+// Description
+
+
+#include "proj2.h"
+
+int main () 
+{
+  srand(time(NULL));
+  vector<Pokemon> pokeDex;
+  vector<MyPokemon> myCollection;
+  getPokeDex(pokeDex);
+  getMyCollection(myCollection);
+  mainMenu (pokeDex, myCollection);
+  return 0;
+}
+
+void getPokeDex(vector<Pokemon> & pokeDex)
+{
+  fstream dexEntries;
+  //creates temporary variables to import data into
+  int num, minCP, maxCP, rarity;
+  string name;
+  dexEntries.open(POKEDEX);
+  //imports pokemon information until we have all 151 of them in the pokeDex Vector
+  for(int i = 0; i < POKECOUNT; i++)
+    {
+      dexEntries >> num >> name >> minCP >> maxCP >> rarity;
+      
+      Pokemon newPoke(num, name, minCP, maxCP, rarity);
+      pokeDex.push_back(newPoke);
+    }
+  dexEntries.close();
+}
+
+void getMyCollection(vector<MyPokemon> & myCollection)
+{
+  //creates temporary variables to import data into
+  int num, cp, hp, rarity;
+  string name;
+  //io stream variable
+  fstream collection;
+  collection.open(MYCOLLECTION);
+
+  //while we haven't reached the end of the file
+  //import the data into our temp variables
+  //make a new MyPokemon object with that data 
+  //and push it into the vector before going to the next line
+  while(!collection.eof())
+    {
+      collection >> num >> name >> cp >> hp >> rarity;
+      MyPokemon myNewPoke(num, name, cp, hp, rarity);
+      myCollection.push_back(myNewPoke);
+    }
+  collection.close();
+}
+
+void printPokeDex(vector <Pokemon> & pokeDex)
+{
+  //Print every pokemon's number and name 
+  for (unsigned int i = 0; i < pokeDex.size(); i++)
+    {
+      cout << pokeDex[i].GetNum()<< "    " << pokeDex[i].GetName() << endl;
+    }
+}
+
+void printMyCollection(vector <MyPokemon> & myCollection)
+{
+  //if we have pokemon in our collection
+  if(myCollection.size() > 0)
+    {
+      //print all of the pokemon's information
+      for (unsigned int i = 0; i < myCollection.size(); i++)
+	{
+	  cout << endl << i << "." << setw(5) 
+	       << myCollection[i].GetNum()<< "        " << myCollection[i].GetName() << setw(10)
+	       << myCollection[i].GetCP()<< setw(10) <<  myCollection[i].GetHP() << setw(10)
+	       << myCollection[i].GetRarity() << endl;
+	}
+    }
+  else 
+    {
+      cout << endl << "No Pokemon in your collection" << endl << endl;
+    }
+}
+
+void catchPokemon(vector <Pokemon> & pokeDex, vector<MyPokemon> & myCollection)
+{
+  int choice = 0;
+  //display menu while the user hasn't made or choice
+  // or the choice is invalid
+  do
+    {
+      cout << "What type of Pokemon would you like to try and catch?:" << endl
+       << "1. Very Common (Very High Probability)" << endl
+       << "2. Common (High Probability)" << endl
+       << "3. Uncommon (Normal Probability)" << endl
+       << "4. Rare (Low Probability))" << endl
+	   << "5. Ultra Rare( Extremely Low Probability)" << endl << endl;
+      cin >> choice;
+    }while(choice < 1 || choice > 5);
+
+  //generates a random number between 1 and 100 
+  int findem = rand() % 100 + 1; 
+    
+  //if the random number is less than or equal to the percentage of that rarity
+  //we found a pokemon
+    switch(choice)
+      {
+      case 1:
+	if(findem <= V_COMMON)
+	  {
+	    foundPokemon(1, pokeDex, myCollection);
+	  }
+	else
+	  {
+	    cout << "No Pokemon were found" << endl << endl;
+	  }
+	break;
+      case 2:
+	if(findem <= COMMON)
+          {
+            foundPokemon(2, pokeDex, myCollection);
+          }
+        else
+          {
+            cout << "No Pokemon were found" << endl << endl;
+          }
+
+	break;
+      case 3:
+	if(findem <= UNCOMMON)
+          {
+            foundPokemon(3, pokeDex, myCollection);
+          }
+        else
+          {
+            cout << "No Pokemon were found" << endl << endl;
+          }
+
+	break;
+      case 4:
+	if(findem <= RARE)
+          {
+            foundPokemon(4, pokeDex, myCollection);
+          }
+        else
+          {
+            cout << "No Pokemon were found" << endl << endl;
+          }
+
+	break;
+      case 5:
+	if(findem <= U_RARE)
+          {
+            foundPokemon(4, pokeDex, myCollection);
+          }
+        else
+          {
+            cout << "No Pokemon were found" << endl << endl;
+          }
+
+	break;
+      }
+}
+
+void foundPokemon(int rarity, vector <Pokemon> & pokeDex, 
+		 vector<MyPokemon> & myCollection )
+{
+  int num, CP, HP;
+  string name;
+  //chooses a random number between 1 and 151
+  int foundPoke = rand() % POKECOUNT + 1;
+  //if the pokemon at that index doesn't have the right rarity
+  while(pokeDex[foundPoke].GetRarity() != rarity)
+    {
+      //reroll for another number
+      foundPoke = rand() % POKECOUNT + 1;
+    }
+
+  if(pokeDex[foundPoke].GetRarity() == rarity)
+    {
+      cout << "Congrats! You found a  " << pokeDex[foundPoke].GetName() << endl << endl;
+      num =  pokeDex[foundPoke].GetNum();
+      name = pokeDex[foundPoke].GetName();
+      int min = pokeDex[foundPoke].GetCPMin();
+      int max = pokeDex[foundPoke].GetCPMax();
+      //chooses a CP between the Max and Min for that type of pokemon
+      CP = rand() %  max + min;
+      //multiplies CP by .1 to get HP
+      HP = CP * HP_RATIO;
+      MyPokemon newPokeman(num, name, CP, HP, rarity);
+      myCollection.push_back(newPokeman);
+    }
+  
+}
+
+void mainMenu(vector <Pokemon> & pokeDex, vector<MyPokemon> & myCollection)
+{
+  int option = 0;
+  bool isExit = 0;
+  do {
+    do 
+      {
+      cout << "What would you like to do?: " << endl;
+      cout << "1. See the PokeDex" << endl;
+      cout << "2. See your collection" << endl;
+      cout << "3. Search for a new Pokemon" << endl;
+      cout << "4. Battle Your Pokemon" << endl;
+      cout << "5. Train your Pokemon" << endl;
+      cout << "6. Exit" << endl;
+      cin >> option;
+      }while(option < 1 || option > 6);
+  
+    switch(option){
+    case 1:
+      printPokeDex(pokeDex);
+      break;
+    case 2:
+      printMyCollection(myCollection);
+      break;
+    case 3:
+      catchPokemon(pokeDex,  myCollection);
+      break;
+    case 4:
+      battlePokemon(pokeDex, myCollection);    
+      break;
+    case 5:
+      trainPokemon(pokeDex, myCollection);
+      break;
+    case 6:
+      exitPokemon(myCollection);
+      isExit = 1;
+    }
+  }while(isExit == 0);
+}
+ void battlePokemon(vector <Pokemon> & pokeDex, vector<MyPokemon> & myCollection)
+{
+  int userChoice = -1;
+  //if we don't have any Pokemon in our collection, tell us we can't battle
+  if(myCollection.size() < 1)
+    {
+      cout << endl << "You don't have any pokemon to battle with" << endl;
+    }
+  else
+    {
+      while(userChoice < 0 || userChoice > (myCollection.size() - 1))
+	{
+	  printMyCollection(myCollection);
+	  //picks a random pokemon to battle
+	  int pokeToBattle = rand() % POKECOUNT + 1;
+	  cout << "You are going to fight a " << pokeDex[pokeToBattle].GetName() << endl;
+	  int enemyCP = rand() % pokeDex[pokeToBattle].GetCPMax() + pokeDex[pokeToBattle].GetCPMin();
+	  cout << "The enemy has a CP of " << enemyCP << endl
+	       << "Which of your Pokemon would you like to use?:" << endl;
+	  cin >> userChoice;
+	 
+	  //if our pokemon choice has a lower CP, we lose
+	  //else we win
+	  if(myCollection[userChoice].GetCP() < enemyCP)
+	    {
+	      cout << "Your Pokemon fainted!!!!" << endl << endl;
+	    }
+	  else
+	    {
+	      cout << "You won!!" << endl << endl;
+	    }
+	}
+    }
+}
+
+ void trainPokemon(vector <Pokemon> & pokeDex, vector<MyPokemon> & myCollection)
+{
+  int userChoice = -1;
+  while(userChoice < 0 || userChoice > (myCollection.size() - 1))
+    {
+      cout << endl << "Which of your Pokemon would you like to Train?:" << endl;
+      printMyCollection(myCollection);
+      cin >> userChoice;
+    }
+  //if user's choice to train has a greater CP than the max CP for that type of pokemon
+  if(myCollection[userChoice].GetCP() > pokeDex[myCollection[userChoice].GetNum()].GetCPMax())
+    {
+      //set pokemon's CP to the max
+      myCollection[userChoice].SetCP(pokeDex[myCollection[userChoice].GetNum()].GetCPMax());
+      cout << "Your Pokemon is already at max CP!" << endl;
+    }
+  else
+    {
+      myCollection[userChoice].Train();
+      cout << endl << "Your " << myCollection[userChoice].GetName() << " trained." << endl
+	   << "It's CP is now " << myCollection[userChoice].GetCP() << endl;
+    }
+}
+
+ void exitPokemon(vector<MyPokemon> & myCollection)
+{
+  cout << "File Saved!" << endl;
+   saveMyCollection(myCollection);
+}
+
+void saveMyCollection(vector<MyPokemon> & myCollection)
+{
+  fstream collectionFile;
+  collectionFile.open(MYCOLLECTION);
+  //writes the information for each item at index i to a file
+  for(unsigned int i = 0 ; i < myCollection.size() ; i++)
+    {
+      collectionFile << myCollection[i].GetNum() << " "
+		     << myCollection[i].GetName() << " "
+		     << myCollection[i].GetCP() << " "
+		     << myCollection[i].GetHP() << " "
+		     << myCollection[i].GetRarity() << endl;
+    }
+  collectionFile.close();
+}

@@ -1,0 +1,21 @@
+GNU gdb (GDB) Red Hat Enterprise Linux (7.2-92.el6)
+Copyright (C) 2010 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "x86_64-redhat-linux-gnu".
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>...
+Reading symbols from /afs/umbc.edu/users/j/o/joelo1/home/cs313/projects/proj1/convert...(no debugging symbols found)...done.
+[?1034h(gdb) bqq
+(gdb) srun
+(gdb) run
+Starting program: /afs/umbc.edu/users/j/o/joelo1/home/cs313/projects/proj1/convert 
+126
+
+Program exited normally.
+Missing separate debuginfos, use: debuginfo-install glibc-2.12-1.209.el6_9.2.x86_64
+(gdb) break main
+Breakpoint 1 at 0x4004d0
+(gdb) q

@@ -1,0 +1,166 @@
+PLAY = 0
+END = 1
+# printBoard() takes the board list at outputs it as a grid
+# Input: board list
+# Output: board grid
+def printBoard(boardList):
+     boardCount = 0
+     for n in boardList:
+          if boardCount == 2 or boardCount == 5 or boardCount == 8:
+               print(n)
+          else:
+               print(n, end = " | ")
+          boardCount = boardCount + 1
+     print()
+
+# boardCheck() checks if there are any spaces left on the board
+# Input: board list
+# Output: board is full alert
+def boardCheck(boardList, symDict, sym1, sym2, state):
+     boardSpace = 0
+     for n in boardList:
+          if n == symDict[sym1] or n == symDict[sym2]:
+               boardSpace = boardSpace + 1
+     if boardSpace == 9:
+          print("The board is full")
+          return True # Returns True for if statement later in code 
+
+# winCond() holds the win conditions aka 3 in a row, column, or diagonal
+# Input: Values at all possible win locations
+# Output: player has won alert
+def winCond(boardList,p,symDict,sym):
+     #  HORIZONTALS
+        if boardList[0:3] == [symDict[sym],symDict[sym],symDict[sym]]:
+             print("player",p,"has won!")
+             return True
+        if boardList[3:6] == [symDict[sym],symDict[sym],symDict[sym]]:
+             print("player",p,"has won!")
+             return True
+        if boardList[6:9] == [symDict[sym],symDict[sym],symDict[sym]]:
+             print("player",p,"has won!")
+             return True
+     #  VERTICALS
+        if boardList[0] and boardList[3] and boardList[6] == symDict[sym]:
+             print("player",p,"has won!")
+             return True
+        if boardList[1] and boardList[4] and boardList[7] == symDict[sym]:
+             print("player",p,"has won!")
+             return True
+        if boardList[2] and boardList[5] and boardList[8] == symDict[sym]:
+             print("player",p,"has won!")
+             return True
+     #DIAGONALS
+        if boardList[0] and boardList[4] and boardList[8] == symDict[sym]:
+             print("player",p,"has won!")
+             return True
+        if boardList[2] and boardList[4] and boardList[6] == symDict[sym]:
+             print("player",p,"has won!")
+             return True
+
+
+
+
+def play(state,p1,p2,p1Sym,p2Sym):
+    sym = {1:"X" , 2:"O"}
+    board = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    print("Player", p1, "will go first and will play with the", sym[p1Sym])
+    printBoard(board)
+
+    while state == PLAY:
+         print("Player", p1, "what is your choice?: ")
+         p1Choice = player(board,sym,p1Sym,p2Sym)
+         if p1Choice == -1:
+              saveFile = open("tic.txt", "w")
+              for s in board:
+                   saveFile.write(str(s))
+              saveFile.close()
+              print("File Saved!")
+              return
+         elif p1Choice == -2:
+              print("Game Loaded")
+              loadFile = open("tic.txt")
+              boardString = loadFile.readline()
+              for c in range(len(boardString)):
+                   board[c] = boardString[c]
+              printBoard(board)
+         
+         board[p1Choice - 1] = sym[p1Sym]
+         printBoard(board)
+         boardCheck(board,sym,p1Sym,p2Sym,state)
+         winCond(board,p1,sym,p1Sym)
+
+         if winCond(board,p1,sym,p1Sym)== True:
+              return
+         if boardCheck(board,sym,p1Sym,p2Sym,state) == True:
+              return 
+
+         print("Player", p2, "What is you choice?: ")
+         p2Choice = player(board,sym,p1Sym,p2Sym)
+         if p2Choice == -1:
+              saveFile = open("tic.txt", "w")
+              for s in board:
+                   saveFile.write(str(s))
+              saveFile.close()
+              print("File Saved!")
+              return
+         board[p2Choice - 1] = sym[p2Sym]
+         printBoard(board)
+         boardCheck(board,sym,p1Sym,p2Sym,state)
+         winCond(board,p2,sym,p2Sym)
+
+         if winCond(board,p2,sym,p2Sym) == True:
+              return
+         if boardCheck(board,sym,p1Sym,p2Sym,state) == True:
+              return
+    
+def player(boardList,symDict,sym1,sym2):
+     choice = int(input("(1-9) or -1 to Save or -2 to Load: "))
+     while choice < -2 or choice > 9 or choice == 0:
+          choice = int(input("Number must be 1 - 9, pick again: "))
+     while boardList[choice - 1] == (symDict[sym1] or symDict[sym2]):
+              choice = int(input("ALready taken, pick again: "))
+     return choice 
+         
+
+        
+def randomize(p1, p2, p1Sym, p2Sym):
+    import random
+    p1 = random.randint(1,2)
+    p2 = 0
+    p1Sym = random.randint(1,2)
+    p2Sym = 0
+
+    if(p1 == 1):
+        p2 = 2
+    elif(p1 == 2):
+        p2 = 1
+
+    if(p1Sym == 1):
+        p2Sym = 2
+    elif(p1Sym == 2):
+        p2Sym = 1
+
+    return (p1,p2,p1Sym,p2Sym)
+
+def main():
+    p1 = 0
+    p2 = 0
+    p1Sym = 0
+    p2Sym = 0
+    p1,p2,p1Sym,p2Sym = randomize(p1, p2, p1Sym, p2Sym)
+    gamestate = PLAY
+    print ( p1, p2, p1Sym, p2Sym)
+    play(gamestate,p1,p2,p1Sym,p2Sym)
+    gamestate = END
+    if gamestate == END:
+         replay = input("Would you like to play again? y/n: ")
+         while replay.lower() != "y" and replay.lower() != "n":
+              replay = input(" Only type 'y' or 'n': ")
+         if replay.lower() == "n":
+              print("Thank You for playing")
+         elif replay.lower() == "y":
+              p1,p2,p1Sym,p2Sym = randomize(p1, p2, p1Sym, p2Sym)
+              gamestate = PLAY
+              play(gamestate,p1,p2,p1Sym,p2Sym)
+    gamestate = END
+main()

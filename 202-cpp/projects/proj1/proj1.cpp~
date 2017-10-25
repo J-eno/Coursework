@@ -1,0 +1,201 @@
+// File: proj1.cpp
+// Project: CMSC 202 Project 1, Fall 2016
+// Author: Joel Okpara
+// Date: 9/18/2016
+// Section 1
+// Email: joelo1@umbc.edu
+// Description
+
+#include "proj1.h"
+
+const char  INPUT_FILE[50] = "proj1.txt";
+const int CLOSE = -1;
+
+int main()
+{
+  cout.setf(ios::fixed);
+  cout.setf(ios::showpoint);
+  cout.precision(2);
+
+  fstream profileData;
+
+  //user information variables
+  string userFName = "";
+  string userLName = "";
+  int userAge = 0;
+  double initDeposit = 0.0;
+
+  float accountBalance = 0.0;
+
+  int startInput = 0;
+  int menuInput = 0;
+  string saveDetails = "";
+
+  bool done = false;
+
+  while(startInput < 1 || startInput > 3)
+    {
+      startInput = menuStart();
+
+      switch(startInput)
+	{
+	case 1:
+	  profileData.open(INPUT_FILE);
+	  profileData >> userFName >> userLName >> userAge >> initDeposit;
+	  profileData.close();
+	  accountBalance = initDeposit;
+	  break;
+	case 2:
+	  cout << "Please enter the following" << endl << endl
+	       << "First Name: ";
+	  cin >> userFName;
+	  cout << "Last Name: ";
+	  cin >> userLName;
+	  cout << "Age: ";
+	  cin >> userAge;
+	  cout << "Initial Deposit: ";
+	  cin >> initDeposit;
+	  accountBalance = initDeposit;
+	  break;
+	case 3:
+	  cout << "Goodbye!" << endl;
+	  menuInput = CLOSE;
+	  break;
+	default:
+	  cout << "hi" << endl;
+
+	}
+    }
+
+  while ((menuInput < 1 || menuInput > 5) && menuInput != CLOSE)
+    {
+      while (!done)
+	{
+	  menuInput = menuMain();
+	  switch(menuInput)
+	    {
+	    case 1:
+	      displayBalance(accountBalance);
+	      break;
+	    case 2:
+	      deposit(accountBalance);
+	      break;
+	    case 3:
+	      withdraw(accountBalance);
+	      break;
+	    case 4:
+	      displayAccountDetails(userFName, userLName, userAge, accountBalance);
+	      break;
+	    case 5:
+	      cout << "Would you like to save your account information? y/n" << endl;
+	      cin >> saveDetails;
+	      if(saveDetails == "y")
+		{
+		  profileData.open(INPUT_FILE);
+		  profileData << userFName << endl 
+			      << userLName << endl 
+			      << userAge << endl 
+			      << accountBalance;
+		  profileData.close();
+		  cout << "File Saved" << endl;
+		}
+	      cout << "Thanks you for using the UMBC ATM" << endl;
+	      done = true;
+	      break;
+	    default:
+	      cout << "what?" << endl;
+	    }
+	}
+    }
+
+  return 0;
+}
+
+int menuStart()
+{
+  int userInput = 0;
+  cout << "Welcome to the UMBC ATM" << endl
+       << "Choose from below:\n"
+       << "1. Load a User Profile from File" << endl
+       << "2. Enter a new User Profile" << endl
+       << "3. Exit" << endl;
+  cin >> userInput;
+  
+    return userInput;
+}
+
+int menuMain()
+{
+  int userInput = 0;
+  cout << "******** Please Choose an Option from the Menu ********" << endl
+       << "1. Account Balance" << endl
+       << "2. Deposit money" << endl
+       << "3. Withdraw money" << endl
+       << "4. Display your account details" << endl
+       << "5. Exit" << endl
+       << "Enter your choice: ";
+
+  cin >> userInput;
+
+
+  return userInput;
+}
+
+void displayBalance(float accountBalance)
+{
+  cout << endl;
+  cout << "Account Balance: $" << accountBalance << endl;
+  cout << endl;
+}
+
+void displayAccountDetails(string fName, string lName, int age, float accountBalance)
+{
+  cout << endl 
+       << "First Name: " << fName << endl
+       << "Last Name: " << lName << endl
+       << "Age: " << age << endl
+       << "Account Balance: $" << accountBalance << endl << endl;
+
+}
+
+void deposit( float &accountBalance)
+{
+  double depositAmount = 0;
+
+  cout << endl 
+       << "Please enter the amount to be deposited"
+       << endl;
+  cin >> depositAmount;
+      
+  if(depositAmount < 0)
+    {
+      cout  << endl << "Amount should be greater than 0" << endl;
+    }
+  else
+    {
+      accountBalance += depositAmount;
+      cout << endl << "$" << depositAmount << " deposited to your account" << endl << endl;
+    }
+
+}
+
+void withdraw( float &accountBalance)
+{
+  double withdrawAmount = 0;
+
+  cout << endl
+       << "Please enter the amount to be withdrawn"
+       << endl;
+  cin >> withdrawAmount;
+
+  if(withdrawAmount < 0)
+    {
+      cout << endl << "Amount should be greater than 0" << endl;
+    }
+  else
+    {
+      accountBalance -= withdrawAmount;
+      cout << endl << "$" << withdrawAmount << " withdrawn from your account" << endl << endl;
+    }
+
+}

@@ -1,0 +1,156 @@
+#include "LinkedList.h"
+
+using namespace std;
+
+LinkedList::LinkedList()
+{
+  m_head = NULL;
+  m_tail = NULL;
+}
+
+LinkedList::~LinkedList()
+{
+  Clear();
+}
+
+Node *LinkedList::CreateNode(int newInt, string newPayload)
+{
+  Node *nodePtr = new Node;
+  nodePtr->m_next = NULL;
+  nodePtr->m_int = newInt;
+  nodePtr->m_payload = newPayload;
+  return nodePtr;
+}
+
+void LinkedList::InsertEnd(int newInt, string newPayload)
+{
+  Node *newNode = CreateNode(newInt, newPayload);
+  if(m_head == NULL)
+    {
+       m_head = newNode;
+       m_tail = newNode;
+    }
+  else
+    {
+      m_tail->m_next = newNode;
+      m_tail = newNode;
+    }
+ 
+}
+
+void LinkedList::Display()
+{
+  cout << "Payload of list are:" << endl;
+  Node *curr = m_head;
+  while(curr != NULL)
+    {
+      cout << curr->m_payload << "->";
+      curr = curr->m_next;
+    }
+  cout << "END" << endl << endl;
+}
+
+void LinkedList::Sort()
+{
+  int temp;
+  string tempStr;
+  Node *temp1, *temp2;
+  
+  for(temp1 = m_head; temp1 != NULL; temp1 = temp1->m_next)
+    {
+      for(temp2 = temp1->m_next; temp2 != NULL; temp2 = temp2->m_next)
+	{
+	  if(temp1->m_int > temp2->m_int)
+	    {
+	      temp = temp1->m_int;
+	      tempStr = temp1->m_payload;
+
+	      temp1->m_int = temp2->m_int;
+	      temp1->m_payload = temp2->m_payload;
+	      
+	      temp2->m_int = temp;
+	      temp2->m_payload = tempStr;
+	    }
+	}
+    }
+
+}
+
+bool LinkedList::IsEmpty()
+{
+  if(m_head == NULL)
+    {
+      return true;
+    }
+  else return false;
+}
+
+
+LinkedList LinkedList::Decrypt()
+{
+  LinkedList decrypted;
+  Node *curr;
+
+  for(curr = m_head; curr!= NULL; curr = curr->m_next)
+    {
+      bool isSq = IsPerfectSquare(curr->m_int);
+      bool isCb = IsPerfectCube(curr->m_int);
+      if(isSq)
+	{
+	
+	  decrypted.InsertEnd(sqrt(curr->m_int),curr->m_payload);
+	}
+      else if(isCb)
+	{
+
+	  decrypted.InsertEnd(cbrt(curr->m_int), curr->m_payload);
+	}
+    }
+
+  return decrypted;
+}      
+
+bool LinkedList::IsPerfectSquare(int n)
+{
+  int temp;
+  temp = round(sqrt(n));
+  if(temp * temp == n)
+    {
+       return true;
+    }
+  else
+    {
+      return false;
+    }
+  
+}
+
+bool LinkedList::IsPerfectCube(int n)
+{
+  int temp;
+  temp = round(cbrt(n));
+  if (temp * temp * temp == n)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+
+}
+
+void LinkedList::Clear()
+{
+  Node *del = m_head;
+ 
+  while(del != NULL)
+    {
+      m_head = m_head->m_next;
+      delete del;
+      del = m_head;
+    }
+  m_head = NULL;
+  m_tail = NULL;
+
+}
