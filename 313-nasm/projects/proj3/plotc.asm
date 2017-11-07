@@ -1,0 +1,171 @@
+;;  plotc.asm
+;;Joel Okpara
+	
+	      section .data
+	;;  stuff from above
+af:		dq	1.0, 0.0, -0.5 ; coefficients of cosine polynomial, a_0 first
+		dq	0.0, 0.041667, 0.0, -0.001389, 0.0, 0.000025
+XF:		dq	0.0	; computed  compute  Y = cos(XF)
+Y:		dq	0.0	; computed
+N:		dq	8	; power of polynomial
+X0:		dq	-3.14159 ; start XF
+DX0:		dq	0.15708	 ; increment for XF  ncol-1  times
+one:	    	dq      1.0
+nten:	   	dq      -10.0
+twenty:		dq      20.0
+a10:		db      10,0 	; need address of a10 for linefeed
+ncol:	   	dq      41
+nrow:	   	dq      21
+spc:	    	db      ' '
+star:	   	db      '*'
+
+	      section .bss
+	;;  stuff from above
+a2:		resb 	21*41	; two dimensional array of bytes
+i:		resq 	1	; row subscript
+j:		resq 	1	; col subscript
+k:	      	resq    1	; row subscript computed
+
+	
+	      section .text
+	      global _start
+_start:
+	push rbp
+
+	;;  clear a2 to space
+	mov 	rax,0		; i=0
+	mov	[i],rax
+loopi:
+	mov	rax,[i]
+	mov 	rbx,0		; j=0
+	mov	[j],rbx
+loopj:
+	mov	rax,[i]
+	mov	rbx,[j]
+	imul 	rax,[ncol]	; i*ncol
+	add  	rax, rbx	; i*ncol + j
+	mov 	dl, [spc]	; need just character, byte
+	mov 	[a2+rax],dl	; store space
+
+	;; 	mov	rdi, fmtdbg
+	;; 	mov	rsi, [i]
+	;; 	mov	rdx, [j]
+	;; 	mov	rcx, rax
+	;; 	mov	rax, 0
+	;; 	call	printf
+
+	mov	rbx,[j]
+	inc 	rbx		; j++
+	mov	[j],rbx
+	cmp 	rbx,[ncol]      ; j<ncol
+	jne 	loopj
+
+	mov	rax,[i]
+	inc 	rax		; i++
+	mov	[i],rax
+	cmp	rax,[nrow]	; i<ncol
+	jne 	loopi
+	
+	;;  end clear a2 to space
+
+	;; compute YF = cos(XF)
+	fld 	qword[X0]
+	fstp	qword[XF]
+	mov	rax, 0
+	mov	[j], rax	;j = 0
+cos:
+	mov	rcx,[N]		;loop count
+	fld	qword[af+8*rcx]	;get coefficient a_n
+h5loop:
+	fmul	qword[XF]	;*XF
+	fadd	qword[af+8*rcx-8]
+	loop 	h5loop		;decrement rcx, jump on non zero
+	fstp	qword[Y]	;store into Y
+
+	fld 	qword[Y]	;Y
+	fadd	qword[one]	;Y + 1
+	fmul	qword[nten]	;(Y+1)*(-10)
+	fadd	qword[twenty]	;20 + (Y+1)*(-10)
+	fistp	qword[k]	;store int in k
+
+	mov	rax, [k]	;k
+	imul	rax, [ncol]	;k * ncol
+	mov	rbx, [j]
+	add	rax, rbx	;k * ncol + j
+
+	mov	dl,[star]
+	mov	[a2+rax],dl	;plot star
+
+	fld	qword[XF]
+	fadd	qword[DX0]
+	fstp	qword[XF]	;XF = XF + DX0
+
+	mov	r9,[j]
+	inc	r9
+	mov	[j],r9			;j++
+
+	cmp	r9,[ncol]
+	jne	cos
+
+	
+	;;  print
+	mov 	rax,0		; i=0
+	mov	[i],rax
+ploopi:
+	mov	rax,[i]
+	mov 	rbx,0		; j=0
+	mov	[j],rbx
+ploopj:
+	mov	rax,[i]
+	mov	rbx,[j]
+	mov 	dl, [spc]
+	imul	rax, [ncol]
+	add	rax, rbx
+	; won't accept
+	;;  compute double subscript
+	
+
+	mov 	rsi, rax
+	add	rsi, a2
+	mov	rax, 1
+	mov 	rdi, 1
+	mov	rdx, 1
+	syscall
+
+	mov	rbx,[j]
+	inc 	rbx		; j++
+	mov	[j],rbx
+	cmp 	rbx,[ncol]      ; j<ncol
+	jne 	ploopj
+
+	mov	rsi, a10
+	mov 	rax, 1
+	mov	rdi, 1
+	mov	rdx, 1
+	syscall
+	
+	mov	rax,[i]
+	inc 	rax		; i++
+	mov	[i],rax
+	cmp	rax,[nrow]	; i<ncol
+	jne 	ploopi
+
+	;;  print a2
+	
+	;;  XF = 0.0
+	;;  jloop
+	;;  compute cosine and put  *  in  a2 array
+	;;  end jloop
+
+	;;  iloop
+	;;  jloop
+	;;  print  a2 array
+	;;  end jloop
+	;;  end iloop
+
+	  pop rbp
+	  mov rax,60
+	  mov rdi,0
+	  syscall   		; done, exit
+
+	;;  end of plotc.asm
