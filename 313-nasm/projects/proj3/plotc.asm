@@ -100,6 +100,9 @@ h5loop:
 	fadd	qword[DX0]
 	fstp	qword[XF]	;XF = XF + DX0
 
+	;;this incrementation was my own code
+	;; wasn't sure I could increment j directly and was too lazy to try so i put it in a random register
+	;;you could try incrementing directly or choose another register or use add 1 instead of inc
 	mov	r9,[j]
 	inc	r9
 	mov	[j],r9			;j++
@@ -121,12 +124,10 @@ ploopj:
 	mov 	dl, [spc]
 	imul	rax, [ncol]
 	add	rax, rbx
-	; won't accept
-	;;  compute double subscript
 	
 
 	mov 	rsi, rax
-	add	rsi, a2
+	add	rsi, a2       ;I added a2 separately here instead of doing "mov rsi, [a2+rax]" <- so you should probably do it this way
 	mov	rax, 1
 	mov 	rdi, 1
 	mov	rdx, 1
