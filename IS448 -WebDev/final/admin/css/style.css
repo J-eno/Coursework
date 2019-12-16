@@ -1,0 +1,25 @@
+td {
+	text-align: center;
+	padding: 5px;
+	border-bottom: 1px solid #cceeff;
+}
+tr:hover 
+{
+	background-color: #cceeff;
+}
+tr:nth-child(even) 
+{
+	background-color: #f2f2f2;
+}
+tr:nth-child(even):hover
+{
+	background-color: #cceeff;
+}
+h1   {color: blue;}
+h2   {color: green;}
+
+table { 
+    border-spacing: 0px;
+	padding: 0px;
+    
+}
