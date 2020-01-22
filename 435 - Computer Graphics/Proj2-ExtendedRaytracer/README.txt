@@ -7,7 +7,7 @@ COMMAND LINE ARGS
 
 -j Activates stratified sampling
 
--s <num> sets the number of samples to be taken to num*num
+-s <num> sets the number of samples to be taken to num*num (When num is more than 3 or 4 and the runtime gets super long)
 
 -p enables phong shading
 
